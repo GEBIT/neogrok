@@ -15,6 +15,7 @@
   persistInitialPreferences(data.preferences);
 </script>
 
+{#if $page.data.session?.user?.id}
 <div class="container mx-auto px-2 py-4">
   <nav class="pb-12">
     <ul class="flex justify-center text-xs gap-y-2 flex-wrap">
@@ -45,6 +46,16 @@
     </ul>
   </nav>
   <main>
-    <slot />
+  <slot />
   </main>
 </div>
+{:else}
+<!-- Show signin link on authentication or authorization problem -->
+<h1>Access Denied</h1>
+<p>
+  You can
+  <a href="/auth/signin" data-sveltekit-preload-data="off">
+click this link to sign in.<br>
+  </a>
+</p>
+{/if}

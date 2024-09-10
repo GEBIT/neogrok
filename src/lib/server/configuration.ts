@@ -1,12 +1,12 @@
 import * as v from "@badrap/valita";
 import fs from "node:fs";
 
-const defaultZoektTitle = "ɴᴇᴏɢʀᴏᴋ";
+const defaultNeogrokTitle = "ɴᴇᴏɢʀᴏᴋ";
 
 const zoektUrlSchema = v.string().map((u) => new URL(u));
 const fileConfigurationSchema = v.object({
   zoektUrl: zoektUrlSchema.optional(),
-  zoektTitle: v.string().default(defaultZoektTitle),
+  neogrokTitle: v.string().default(defaultNeogrokTitle),
   openGrokProjectMappings: v
     .record(v.string())
     .map((o) => new Map(Object.entries(o)))
@@ -17,13 +17,14 @@ const defaultConfigFilePath = "/etc/neogrok/config.json";
 
 const environmentConfigurationSchema = v.object({
   ZOEKT_URL: zoektUrlSchema.optional(),
-  ZOEKT_TITLE: v.string().default(defaultZoektTitle),
+  NEOGROK_TITLE: v.string().default(defaultNeogrokTitle),
 });
 
 type Configuration = {
   readonly zoektUrl: URL;
-  readonly zoektTitle: string;
+  readonly neogrokTitle: string;
   readonly openGrokProjectMappings: ReadonlyMap<string, string>;
+  readonly authProviderId: string;
 };
 
 // We have to export a not-yet-bound `configuration` at module eval time because
@@ -78,12 +79,13 @@ export const resolveConfiguration: () => Promise<void> = async () => {
       `"ZOEKT_URL" must be defined in the environment, or "zoektUrl" must be defined in the configuration file at ${configFilePath}`,
     );
   }
-  const zoektTitle = environmentConfig.ZOEKT_TITLE ?? fileConfig?.zoektTitle;
+  const neogrokTitle = environmentConfig.NEOGROK_TITLE ?? fileConfig?.neogrokTitle;
 
   configuration = {
     zoektUrl,
-    zoektTitle,
+    neogrokTitle,
     openGrokProjectMappings:
       fileConfig?.openGrokProjectMappings ?? new Map<string, string>(),
+    authProviderId: "keycloak", // authProviderId not configurable atm
   };
 };

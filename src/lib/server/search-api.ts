@@ -28,6 +28,7 @@ export type SearchResponse =
 export const search = async (
   { query, contextLines, files, matches }: SearchQuery,
   f: typeof fetch,
+  userName: string,
 ): Promise<SearchResponse> => {
   const body = JSON.stringify({
     q: query,
@@ -42,6 +43,7 @@ export const search = async (
       // TODO environment vars.
       ShardMaxMatchCount: 10_000,
       TotalMaxMatchCount: 100_000,
+      UserName: userName,
     },
   });
 

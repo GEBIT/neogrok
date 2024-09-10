@@ -2,10 +2,10 @@
   import Link from "$lib/link.svelte";
   import ExampleQuery from "$lib/example-query.svelte";
 
-  export let zoektTitle: string;
+  export let neogrokTitle: string;
 </script>
 
-<h1 class="text-4xl text-center pt-8 tracking-wide">{zoektTitle}</h1>
+<h1 class="text-4xl text-center pt-8 tracking-wide">{neogrokTitle}</h1>
 <div class="flex flex-col items-center pt-6 gap-4">
   <span class="text-center">
     <h2 class="text-2xl font-semibold">query examples</h2>
