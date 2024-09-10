@@ -1,9 +1,12 @@
+import type { LayoutServerLoad } from "./$types.js";
 import { loadPreferences } from "$lib/preferences";
 
-export const load: import("./$types").LayoutServerLoad = ({ cookies }) => {
+export const load: LayoutServerLoad = async (event) => {
+  const session = await event.locals.auth();
   return {
     // While not all pages need preferences, most do. It's easiest to just make
     // them ubiquitously available.
-    preferences: loadPreferences(cookies),
+    session,
+    preferences: loadPreferences(event.cookies),
   };
 };

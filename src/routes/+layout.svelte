@@ -1,6 +1,8 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { persistInitialPreferences } from "$lib/preferences";
+  import User from "$components/user.svelte";
+
   import "../app.css";
 
   const navLinks = [
@@ -45,6 +47,15 @@
     </ul>
   </nav>
   <main>
-    <slot />
+  <div class="py-12">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center">
+      <User
+        data={{
+          user: data?.session?.user,
+          status: Boolean(data?.session),
+        }}
+      />
+    </div>
+  <slot />
   </main>
 </div>
