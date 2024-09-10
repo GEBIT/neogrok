@@ -6,7 +6,22 @@ import {
   type SearchResponse,
 } from "$lib/server/search-api";
 
-export const POST = devalueBypass<SearchQuery, SearchResponse>(
+import type { RequestHandler } from './$types';
+/*
+export const GET: RequestHandler = ({ locals }) => {
+    console.log(locals);
+    // ...
+}
+*/
+export const POST = (async ( event ) => {
+  const session = await event.locals.auth();
+  console.log(session)
+  
+ const zoektPost = devalueBypass<SearchQuery, SearchResponse>(
   searchQuerySchema,
   search,
-);
+  session.user.preferred_username,
+  );
+
+  return zoektPost(event);
+});
