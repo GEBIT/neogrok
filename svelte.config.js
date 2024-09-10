@@ -8,6 +8,11 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter({ precompress: true, polyfill: false }),
+    alias: {
+      $src: "src",
+      $routes: "src/routes",
+      $components: "src/components",
+    },
   },
   compilerOptions: {
     immutable: true,

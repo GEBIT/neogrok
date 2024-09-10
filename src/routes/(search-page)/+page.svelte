@@ -23,7 +23,7 @@
   <title
     >{$routeSearchQuery.query
       ? `${$routeSearchQuery.query} - `
-      : ""}{data.zoektTitle}</title
+      : ""}{data.neogrokTitle}</title
   >
 </svelte:head>
 
@@ -39,12 +39,12 @@
     : null}
 />
 {#if data.searchOutcome.kind === "none"}
-  <Lander zoektTitle={data.zoektTitle}/>
+  <Lander neogrokTitle={data.neogrokTitle}/>
 {:else if data.searchOutcome.kind === "error"}
   {#if previousSearchResults}
     <SearchResults results={previousSearchResults} />
   {:else}
-    <Lander zoektTitle={data.zoektTitle}/>
+    <Lander neogrokTitle={data.neogrokTitle}/>
   {/if}
 {:else}
   <SearchResults results={data.searchOutcome.results} />

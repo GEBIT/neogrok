@@ -14,7 +14,9 @@ export const devalueBypass =
     callZoekt: (
       requestData: RequestData,
       f: typeof fetch,
+      userName: string,
     ) => Promise<ResponseData>,
+    userName: string,
   ): RequestHandler =>
   async ({ request, fetch }) => {
     let requestData: RequestData;
@@ -29,7 +31,7 @@ export const devalueBypass =
     }
 
     try {
-      const responseData = await callZoekt(requestData, fetch);
+      const responseData = await callZoekt(requestData, fetch, userName);
       return new Response(JSON.stringify(responseData), {
         headers: { "content-type": "application/json" },
       });

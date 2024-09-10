@@ -6,6 +6,8 @@ import {
   neogrokRequestConcurrency,
 } from "$lib/server/metrics";
 import type { Handle, HandleServerError } from "@sveltejs/kit";
+import { sequence } from "@sveltejs/kit/hooks";
+import { auth } from "./auth.js";
 
 if (!building) {
   // This seems to be the magic way to do truly one-time setup in both dev and
@@ -19,7 +21,7 @@ if (!building) {
 }
 
 // Handle request metrics on all SvelteKit requests.
-export const handle: Handle = async ({ event, resolve }) => {
+const neogrokHandle: Handle = async ({ event, resolve }) => {
   const routeLabel = event.route.id ?? "null";
   try {
     neogrokRequestConcurrency.labels(routeLabel).inc();
@@ -37,6 +39,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     neogrokRequestConcurrency.labels(routeLabel).dec();
   }
 };
+
+export const handle = sequence(auth.handle, neogrokHandle);
+export const signIn = auth.signIn;
+export const signOut = auth.signOut;
 
 // SvelteKit logs an error every time anything requests a URL that does not map
 // to a route. Bonkers. Override the default behavior to exclude such cases.
