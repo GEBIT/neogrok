@@ -18,9 +18,9 @@ export type ListRepositoriesResponse =
 export async function listRepositories(
   { query }: ListQuery,
   f: typeof fetch,
+  userName: string,
 ): Promise<ListRepositoriesResponse> {
-  const body = JSON.stringify({ q: query });
-
+  const body = JSON.stringify({ q: query, opts: { UserName: userName } });
   const response = await makeZoektRequest(f, "/api/list", body);
 
   if (!response.ok) {

@@ -15,12 +15,12 @@ export const GET: RequestHandler = ({ locals }) => {
 */
 export const POST = (async ( event ) => {
   const session = await event.locals.auth();
-  console.log(session)
-  
- const zoektPost = devalueBypass<SearchQuery, SearchResponse>(
-  searchQuerySchema,
-  search,
-  session.user.preferred_username,
+  const userName = session?.user?.preferred_username
+
+  const zoektPost = devalueBypass<SearchQuery, SearchResponse>(
+    searchQuerySchema,
+    search,
+    userName,
   );
 
   return zoektPost(event);

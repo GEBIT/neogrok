@@ -6,7 +6,15 @@ import {
   type ListRepositoriesResponse,
 } from "$lib/server/zoekt-list-repositories";
 
-export const POST = devalueBypass<ListQuery, ListRepositoriesResponse>(
-  listQuerySchema,
-  listRepositories,
-);
+export const POST = (async ( event ) => {
+  const session = await event.locals.auth();
+  const userName = session?.user?.preferred_username
+  
+  const zoektPost = devalueBypass<ListQuery, ListRepositoriesResponse>(
+    listQuerySchema,
+    listRepositories,
+    userName,
+  );
+
+  return zoektPost(event);
+});
