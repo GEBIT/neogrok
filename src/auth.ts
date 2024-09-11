@@ -15,7 +15,7 @@ const kcConfig = {
   clientSecret: AUTH_KEYCLOAK_SECRET, // Paste "Client secret" here. Use Environment Variables AUTH_KEYCLOAK_ISSUER in prod
 };
 
-export const { handle, signIn, signOut } = SvelteKitAuth({
+export const auth = SvelteKitAuth({
   trustHost: true,
   secret: authjsSecret,
   providers: [Keycloak(kcConfig)],
@@ -45,3 +45,6 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
     },
   },
 });
+
+export const signIn = auth.signIn
+export const signOut = auth.signOut

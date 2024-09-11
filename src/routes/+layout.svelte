@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { persistInitialPreferences } from "$lib/preferences";
-  import User from "$components/user.svelte";
 
   import "../app.css";
 
@@ -17,6 +16,14 @@
   persistInitialPreferences(data.preferences);
 </script>
 
+<!-- redirect request if no session exists -->
+<svelte:head>
+{#if ! $page.data.session}
+  <meta http-equiv="refresh" content="0; url=/auth/signin" />
+{/if}
+</svelte:head>
+
+{#if $page.data.session}
 <div class="container mx-auto px-2 py-4">
   <nav class="pb-12">
     <ul class="flex justify-center text-xs gap-y-2 flex-wrap">
@@ -47,15 +54,15 @@
     </ul>
   </nav>
   <main>
-  <div class="py-12">
-    <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center">
-      <User
-        data={{
-          user: data?.session?.user,
-          status: Boolean(data?.session),
-        }}
-      />
-    </div>
   <slot />
   </main>
 </div>
+{:else}
+<!-- Show signin link if redirect doesn't work -->
+<h1>Access Denied</h1>
+<p>
+  <a href="/auth/signin" data-sveltekit-preload-data="off">
+    If you are not redirected automatically, please click this link to sign in.
+  </a>
+</p>
+{/if}
