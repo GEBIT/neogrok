@@ -15,4 +15,5 @@ COPY package.json .
 COPY main.js .
 COPY --from=app-builder /app/node_modules node_modules
 COPY --from=app-builder /app/build build
+EXPOSE 8080
 ENTRYPOINT ["/nodejs/bin/node", "main.js"]
