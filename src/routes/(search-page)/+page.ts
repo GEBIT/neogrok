@@ -10,7 +10,12 @@ export type SearchOutcome =
   | { kind: "success"; results: SearchResults }
   | { kind: "error"; error: string };
 
-export const load: import("./$types").PageLoad = async ({ url, fetch }) => ({
+export const load: import("./$types").PageLoad = async ({
+  data,
+  url,
+  fetch,
+}) => ({
+  ...data,
   searchOutcome: await executeSearch(url, fetch),
 });
 
