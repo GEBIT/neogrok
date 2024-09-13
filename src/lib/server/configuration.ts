@@ -1,9 +1,12 @@
 import * as v from "@badrap/valita";
 import fs from "node:fs";
 
+const defaultZoektTitle = "ɴᴇᴏɢʀᴏᴋ";
+
 const zoektUrlSchema = v.string().map((u) => new URL(u));
 const fileConfigurationSchema = v.object({
   zoektUrl: zoektUrlSchema.optional(),
+  zoektTitle: v.string().default(defaultZoektTitle),
   openGrokProjectMappings: v
     .record(v.string())
     .map((o) => new Map(Object.entries(o)))
@@ -14,10 +17,12 @@ const defaultConfigFilePath = "/etc/neogrok/config.json";
 
 const environmentConfigurationSchema = v.object({
   ZOEKT_URL: zoektUrlSchema.optional(),
+  ZOEKT_TITLE: v.string().default(defaultZoektTitle),
 });
 
 type Configuration = {
   readonly zoektUrl: URL;
+  readonly zoektTitle: string;
   readonly openGrokProjectMappings: ReadonlyMap<string, string>;
 };
 
@@ -73,9 +78,11 @@ export const resolveConfiguration: () => Promise<void> = async () => {
       `"ZOEKT_URL" must be defined in the environment, or "zoektUrl" must be defined in the configuration file at ${configFilePath}`,
     );
   }
+  const zoektTitle = environmentConfig.ZOEKT_TITLE ?? fileConfig?.zoektTitle;
 
   configuration = {
     zoektUrl,
+    zoektTitle,
     openGrokProjectMappings:
       fileConfig?.openGrokProjectMappings ?? new Map<string, string>(),
   };
