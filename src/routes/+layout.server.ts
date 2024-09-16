@@ -6,10 +6,10 @@ import { signIn } from "$src/auth";
 
 export const load: LayoutServerLoad = async (event) => {
   const session = await event.locals.auth();
-  console.log("Logged in? " + session?.user?.preferred_username);
+  console.log("Logged in? " + session?.user?.id);
 
-  // if (!session?.user?.preferred_username) throw redirect(303, '/auth/signin');
-  if (!session?.user?.preferred_username) {
+  // if (!session?.user?.id) throw redirect(303, '/auth/signin');
+  if (!session?.user?.id) {
     // try automatic signin
 
     // this does not work with authjs, yet (requires formData)

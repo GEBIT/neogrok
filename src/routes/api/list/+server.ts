@@ -8,12 +8,12 @@ import {
 
 export const POST = (async ( event ) => {
   const session = await event.locals.auth();
-  const userName = session?.user?.preferred_username
+  const userId = session?.user?.id
   
   const zoektPost = devalueBypass<ListQuery, ListRepositoriesResponse>(
     listQuerySchema,
     listRepositories,
-    userName,
+    userId,
   );
 
   return zoektPost(event);

@@ -9,6 +9,7 @@ const kcConfig = {
   refreshEndpoint: env.AUTH_KEYCLOAK_REFRESH ?? env.AUTH_KEYCLOAK_ISSUER + "/protocol/openid-connect/token",
   clientId: env.AUTH_KEYCLOAK_ID, // Paste "Client id" here. Use Environment Variables AUTH_KEYCLOAK_ID in prod
   clientSecret: env.AUTH_KEYCLOAK_SECRET, // Paste "Client secret" here. Use Environment Variables AUTH_KEYCLOAK_ISSUER in prod
+  userIdAttribute: env.AUTH_KEYCLOAK_USER_ID_ATTRIBUTE ?? "preferred_username",
 };
 
 export const auth = SvelteKitAuth({
@@ -17,16 +18,25 @@ export const auth = SvelteKitAuth({
   providers: [Keycloak(kcConfig)],
   callbacks: {
     async jwt({ user, token, account, profile }) {
+        // console.log("JWT:");
+        // console.log("user:");
+        // console.log(user);
+        // console.log("account:");
+        // console.log(account);
+        // console.log("profile:");
+        // console.log(profile);
+
         if (profile) {
-            token.preferred_username = profile.preferred_username;
+            token.userId = profile[userIdAttribute];
         }
 
         //
         // Adapted from https://authjs.dev/guides/refresh-token-rotation
-        // The simple SvelteKitAuth examples perform no sensible session expiration at all,
-        // so we really have to do this.
+        // The simple SvelteKitAuth examples perform no sensible session expiration/refreshing at all,
+        // so we have to do this ourselves.
         //
-        // Note: the "token" argument is NOT the access_token, but a custom authJs one!
+        // Note: the "token" argument is NOT the provider's access_token, but a custom authJs one,
+        // that we have to fill.
         //
         if (account) {
             // First-time login, save the `access_token`, its expiry and the `refresh_token`
@@ -83,8 +93,9 @@ export const auth = SvelteKitAuth({
                 Date.now() / 1000 + newTokens.expires_in
               )
               // Some providers only issue refresh tokens once, so preserve if we did not get a new one
-              if (newTokens.refresh_token)
-                token.refresh_token = newTokens.refresh_token
+              if (newTokens.refresh_token) {
+                  token.refresh_token = newTokens.refresh_token
+              }
               return token
             } catch (error) {
               console.error("Error refreshing access_token", error)
@@ -95,48 +106,14 @@ export const auth = SvelteKitAuth({
         }
     },
 
-    //   if (user) {
-    //     // User is available during sign-in
-    //     token.id = user.id;
-    //   }
-    //   if (profile) {
-    //     token.preferred_username = profile.preferred_username;
-    //     token.given_name = profile.given_name;
-    //     token.family_name = profile.family_name;
-    //   }
-    //   if (account) {
-    //     token.idToken = account.id_token;
-    //     token.accessToken = account.access_token;
-    //     token.refreshToken = account.refresh_token;
-    //     token.expires_at = account.expires_at;
-    //     token.expires = account.expires_at;
-    //   }
-    //   console.log(account)
-
-    //   jwt.verify(token, authjsSecret); // should include expiration!
-
-    //   return token;
-    // },
     session({ session, token }) {
         session.error = token.error
-        session.user.preferred_username = token.error ? null : token.preferred_username;
-        if (Date.now() > token.expires_at * 1000) {
-            session.user.preferred_username = null;
+        if (token.error || Date.now() > token.expires_at * 1000) {
+            session.user.id = null;
+        } else {
+            session.user.id = token.userId;
         }
         return session
-    //   session.user.id = token.id;
-    //   session.user.preferred_username = token.preferred_username;
-    //   console.log("Session user: ");
-    //   console.log(session.user);
-    //   console.log("Session expires: ");
-    //   console.log(session.expires);
-    //   console.log("session error: " + session?.error);
-    //   console.log("token expires: ")
-    //   console.log(token.expires)
-
-    //   jwt.verify(token, authjsSecret); // should include expiration!
-    // //   session.user = { ...token };
-    //   return session;
     },
   },
 });
