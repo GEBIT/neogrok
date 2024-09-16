@@ -7,12 +7,7 @@ import {
 } from "$lib/server/search-api";
 
 import type { RequestHandler } from './$types';
-/*
-export const GET: RequestHandler = ({ locals }) => {
-    console.log(locals);
-    // ...
-}
-*/
+
 export const POST = (async ( event ) => {
   const session = await event.locals.auth();
   const userId = session?.user?.id;

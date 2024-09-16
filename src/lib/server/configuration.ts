@@ -19,6 +19,7 @@ const environmentConfigurationSchema = v.object({
 type Configuration = {
   readonly zoektUrl: URL;
   readonly openGrokProjectMappings: ReadonlyMap<string, string>;
+  readonly authProviderId: string;
 };
 
 // We have to export a not-yet-bound `configuration` at module eval time because
@@ -78,5 +79,6 @@ export const resolveConfiguration: () => Promise<void> = async () => {
     zoektUrl,
     openGrokProjectMappings:
       fileConfig?.openGrokProjectMappings ?? new Map<string, string>(),
+    authProviderId: 'keycloak', // authProviderId not configurable atm
   };
 };

@@ -2,17 +2,17 @@ import { redirect } from '@sveltejs/kit';
 
 import type { LayoutServerLoad } from "./$types.js";
 import { loadPreferences } from "$lib/preferences";
+import { configuration } from "$lib/server/configuration";
 import { signIn } from "$src/auth";
 
 export const load: LayoutServerLoad = async (event) => {
   const session = await event.locals.auth();
   console.log("Logged in? " + session?.user?.id);
 
-  // if (!session?.user?.id) throw redirect(303, '/auth/signin');
   if (!session?.user?.id) {
-    // try automatic signin
+    // try automatic signin when user is not logged in
 
-    // this does not work with authjs, yet (requires formData)
+    // this does not work with authjs, yet (signIn() requires formData)
     // await signIn("keycloak");
 
     // const tokenCall = await event.fetch('/auth/csrf');
@@ -21,22 +21,18 @@ export const load: LayoutServerLoad = async (event) => {
 
     let url = '';
 
-    const params = new URLSearchParams();
-    // params.append('scope', 'api openid profile email');
-
-    const formDataAuthCore = new URLSearchParams();
-    formDataAuthCore.append('redirect', 'true');
-    formDataAuthCore.append('callbackUrl', `${event.url.origin}`);
-    formDataAuthCore.append('provider', `keycloak`);
-    // formDataAuthCore.append('csrfToken', csrfToken);
-
-    const signInRequest = await event.fetch('/auth/signin/keycloak?' + params.toString(), {
+    const signInRequest = await event.fetch('/auth/signin/' + configuration.authProviderId, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'X-Auth-Return-Redirect': '1'
       },
-      body: formDataAuthCore.toString()
+      body: new URLSearchParams({
+        redirect: 'true',
+        callbackUrl: `${event.url.origin}`,
+        grant_type: "refresh_token",
+        // csrfToken: csrfToken!,
+      }),
     });
     const signInResponse = await new Response(signInRequest.body).json();
 

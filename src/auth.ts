@@ -18,6 +18,8 @@ export const auth = SvelteKitAuth({
   providers: [Keycloak(kcConfig)],
   callbacks: {
     async jwt({ user, token, account, profile }) {
+        token.error = null;
+
         // console.log("JWT:");
         // console.log("user:");
         // console.log(user);
@@ -27,7 +29,7 @@ export const auth = SvelteKitAuth({
         // console.log(profile);
 
         if (profile) {
-            token.userId = profile[userIdAttribute];
+            token.userId = profile[kcConfig.userIdAttribute];
         }
 
         //
@@ -38,6 +40,11 @@ export const auth = SvelteKitAuth({
         // Note: the "token" argument is NOT the provider's access_token, but a custom authJs one,
         // that we have to fill.
         //
+        // Note: we cannot invalidate the session immediately when the user logs out of the identity
+        // provider. Only after authJs's session times out, we will notice.
+        //
+        // A user is being considered logged in when `session.user.id` is defined.
+        // `session.error` may contain a hint why (s)he is not logged in.
         if (account) {
             // First-time login, save the `access_token`, its expiry and the `refresh_token`
             return {
@@ -46,23 +53,21 @@ export const auth = SvelteKitAuth({
               expires_at: account.expires_at,
               refresh_token: account.refresh_token,
             }
-        } else if (Date.now() < token.expires_at * 1000) {
+        } else if (token.expires_at && Date.now() < token.expires_at * 1000) {
             // Subsequent logins, but the `access_token` is still valid
             console.log("token not expired: " + token.expires_at);
             return token
-         } else {
-            console.log("token has expired: " + token.expires_at);
+        } else if (token.expires_at && token.refresh_token) {
+            console.log("refreshing expired token: " + token.expires_at + " of " + token.userId);
 
             // Subsequent logins, but the `access_token` has expired, try to refresh it
-            if (!token.refresh_token) throw new TypeError("Missing refresh_token")
-            console.log("refresh_token: ");
-            console.log(token.refresh_token);
+            // console.log("refresh_token:";
+            // console.log(token.refresh_token);
      
             try {
               // The `token_endpoint` can be found in the provider's documentation. Or if they support OIDC,
               // at their `/.well-known/openid-configuration` endpoint.
               // i.e. https://accounts.google.com/.well-known/openid-configuration
-
 
               console.log("refreshing at: " + kcConfig.refreshEndpoint);
               const response = await fetch(kcConfig.refreshEndpoint, {
@@ -98,11 +103,15 @@ export const auth = SvelteKitAuth({
               }
               return token
             } catch (error) {
-              console.error("Error refreshing access_token", error)
+              console.error("Unable to refresh access_token", error)
               // If we fail to refresh the token, return an error so we can handle it on the page
               token.error = "RefreshTokenError"
               return token
             }
+        } else {
+            // no refresh_token available
+            session.user.id = null;
+            session.error = "Not logged in.";
         }
     },
 
