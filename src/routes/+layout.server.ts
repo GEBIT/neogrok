@@ -41,7 +41,7 @@ export const load: LayoutServerLoad = async (event) => {
     }
 
     if (url) {
-      console.log('Auto login user: ', url);
+      console.log('Auto login user: ', session.user.id);
       throw redirect(302, url);
     }
   }

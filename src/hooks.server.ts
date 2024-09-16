@@ -20,8 +20,6 @@ if (!building) {
   await resolveConfiguration();
 }
 
-// export { handle } from "./auth.js";
-
 // Handle request metrics on all SvelteKit requests.
 const neogrokHandle: Handle = async ({ event, resolve }) => {
   const routeLabel = event.route.id ?? "null";

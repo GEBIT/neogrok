@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { persistInitialPreferences } from "$lib/preferences";
-
   import "../app.css";
 
   const navLinks = [
@@ -16,14 +15,7 @@
   persistInitialPreferences(data.preferences);
 </script>
 
-<!-- redirect request if no session exists -->
-<svelte:head>
-{#if ! $page.data.session}
-  <meta http-equiv="refresh" content="0; url=/auth/signin" />
-{/if}
-</svelte:head>
-
-{#if $page.data.session}
+{#if $page.data.session?.user?.id}
 <div class="container mx-auto px-2 py-4">
   <nav class="pb-12">
     <ul class="flex justify-center text-xs gap-y-2 flex-wrap">

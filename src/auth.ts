@@ -110,8 +110,8 @@ export const auth = SvelteKitAuth({
             }
         } else {
             // no refresh_token available
-            session.user.id = null;
-            session.error = "Not logged in.";
+            token.userId = null;
+            token.error = "Not logged in.";
         }
     },
 
