@@ -5,8 +5,17 @@ and scalable code search engine. Neogrok exposes zoekt's search APIs in the form
 of a modern, snappy UI. Neogrok is a SvelteKit application running on Node.js
 and in the browser.
 
-There is a demo deployment of neogrok and zoekt running together at
-https://neogrok-demo-web.fly.dev/. Try it out!
+## GEBIT-specific features
+
+This repository contains some features not present in the fantastic
+[original neogrok repository](https://github.com/isker/neogrok):
+
+- Secured access to the search interface via Keycloak/OIDC
+- Repository access control to limit search results to only those git
+  repositories, to which the logged in user has access to.
+  Requires a [custom version](https://github.com/GEBIT/zoekt) of zoekt,
+  which uses the userId passed by neogrok to select the user-accessible shards.
+- The possibility to change the title to something else than 'neogrok'
 
 ## Features and usage
 
@@ -26,19 +35,9 @@ Together, neogrok and zoekt provide:
   the Linux kernel produces about 2.7GiB of index shards, and serving those
   shards uses just under 1 GiB of RAM.
 
-Beyond that, neogrok aims to be self-documenting. You can find details on usage
-and features on the demo site's [about
-page](https://neogrok-demo-web.fly.dev/about), and a full description of the
-zoekt search syntax on the site's [syntax
-page](https://neogrok-demo-web.fly.dev/syntax).
-
 ## Installing
 
-Neogrok is packaged for installation on
-[NPM](https://www.npmjs.com/package/neogrok). Simply `npm install -g neogrok` to
-install an executable.
-
-Alternatively, building from source is easy. Clone the repository,
+Building from source is easy. Clone the repository,
 `yarn install && yarn run build && yarn run start`. You can of course run the server
 without intermediation by `yarn`, by doing whatever `yarn run start` does directly;
 but the relevant commands may change in the future, whereas `yarn run start` will
@@ -68,6 +67,7 @@ to the option names tabulated below.
 | Option name               | Environment variable name | Required Y/N | Description                                                                                                                        |
 | :------------------------ | :------------------------ | :----------- | :--------------------------------------------------------------------------------------------------------------------------------- |
 | `zoektUrl`                | `ZOEKT_URL`               | Y            | The base zoekt URL at which neogrok will make API requests, at e.g. `/api/search` and `/api/list`                                  |
+| `neogrokTitle`            | `NEOGROK_TITLE`           | N            | The title to be displayed on the front page, defaults to NEOGROK                                                                   |
 | `openGrokProjectMappings` | N/A                       | N            | An object mapping OpenGrok project names to zoekt repository names; see [below](#renaming-opengrok-projects-to-zoekt-repositories) |
 
 ### SvelteKit environment variables
@@ -75,6 +75,36 @@ to the option names tabulated below.
 Note that you can also configure, among other things, which ports/addresses will
 be bound, using SvelteKit's Node environment variables. See the list
 [here](https://kit.svelte.dev/docs/adapter-node#environment-variables).
+
+### Authentication + authorization
+
+This version of neogrok requires authentication in order to access the search interface.
+
+So far, only Keycloak is supported, with OpenID Connect as protocol. The library
+being used, [Auth.js](https://authjs.dev/), has many more options.
+
+Authentication and authorization are configured through these environment variables:
+
+| Environment variable name | Required Y/N | Description                                                                                                                                                  |
+| :------------------------ | :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AUTH_KEYCLOAK_ISSUER`            | Y            | The URL of your Keycloak issuer endpoint. E.g. https://your.keycloak.com/realms/master                                                               |
+| `AUTH_KEYCLOAK_REFRESH`           | N            | The URL of your refresh token endpoint. Defaults to $AUTH\_KEYCLOAK\_ISSUER/protocol/openid-connect/token                                            |
+| `AUTH_KEYCLOAK_ID`                | Y            | The clientId configured in your Keycloak instance for this neogrok service                                                                           |
+| `AUTH_KEYCLOAK_SECRET`            | Y            | The client secret in your Keycloak instance for this neogrok service                                                                                 |
+| `AUTH_KEYCLOAK_USER_ID_ATTRIBUTE` | N            | The attribute in the `profile` claim holding the user name to be passed to zoekt for access control. Defaults to `preferred_username`                |
+| `AUTH_KEYCLOAK_GROUPS_ATTRIBUTE`  | N            | The attribute in the `access token` holding the group memberships of the user. Only needed with `AUTH_KEYCLOAK_REQUIRED_GROUP`. Defaults to `groups` |
+| `AUTH_KEYCLOAK_REQUIRED_GROUP`    | N            | Optionally, the name of a group the user must be a member of, before access is granted. Used with `AUTH_KEYCLOAK_GROUPS_ATTRIBUTE`                   |
+
+**Note 1:**
+The above only configures access to the neogrok web interface.
+Access control wrt the search base is implemented in [this custom version of zoekt](https://github.com/GEBIT/zoekt),
+which evalutes the userId passed from neogrok against an access control list, so that
+only search results to the user-accessible repositories are returned.
+
+**Note 2:**
+In order to use authorization based on group membership, you may need to configure
+the client scope in your Keycloak instance to provide the user's group memberships
+as an attribute in the access token.
 
 ### Prometheus metrics
 
