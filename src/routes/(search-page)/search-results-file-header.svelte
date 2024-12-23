@@ -44,7 +44,7 @@
   {metadata[0]} | {#each file.branches as branch, i}
     {#if i > 0}, {/if}  
     {#if file.fileUrl}
-    <Link to={calcEditLink(file, branch)}>{branch}</Link>
+    <Link to={calcEditLink(file, branch)} tooltip='Edit in Gitlab'>{branch}</Link>
     {:else}
     {branch}
     {/if}
