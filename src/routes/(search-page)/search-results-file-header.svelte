@@ -11,11 +11,6 @@
 
   $: metadata = [
     `${file.matchCount} ${file.matchCount === 1 ? "match" : "matches"}`,
-    // I don't like every result just yelling HEAD, it's not particularly useful
-    // information.
-    ...(file.branches.length > 1 || file.branches[0] !== "HEAD"
-      ? [file.branches.join(", ")]
-      : []),
     file.language || "Text",
     `№${rank}`,
   ];
@@ -46,15 +41,13 @@
       >{:else}<RenderedContent content={file.fileName} />{/if}</span
   >
   <span class="ml-auto">
-  {metadata[0] + (" | ")}
-  {#each file.branches as branch, i}
+  {metadata[0]} | {#each file.branches as branch, i}
     {#if i > 0}, {/if}  
     {#if file.fileUrl}
     <Link to={calcEditLink(file, branch)}>{branch}</Link>
     {:else}
     {branch}
     {/if}
-  {/each}
-  {(" | ") + metadata[2] + (" | ") + metadata[3]}
+  {/each} | {metadata[1]} | {metadata[2]}
 </span>
 </h2>
