@@ -19,6 +19,17 @@
     file.language || "Text",
     `№${rank}`,
   ];
+
+  const calcEditLink = (
+    file: ResultFile,
+    branch: string
+  ): string => {
+    let editLink: string = 'https://gitlab.local.gebit.de/' + file.repository + '/-/edit/' + branch + '/' + file.fileName.text
+    if (file.chunks.length > 0) {
+      editLink += '#L' + file.chunks[0].startLineNumber
+    }
+    return editLink
+  };
 </script>
 
 <h2
@@ -34,5 +45,16 @@
         <RenderedContent content={file.fileName} /></Link
       >{:else}<RenderedContent content={file.fileName} />{/if}</span
   >
-  <span class="ml-auto">{metadata.join(" | ")}</span>
+  <span class="ml-auto">
+  {metadata[0] + (" | ")}
+  {#each file.branches as branch, i}
+    {#if i > 0}, {/if}  
+    {#if file.fileUrl}
+    <Link to={calcEditLink(file, branch)}>{branch}</Link>
+    {:else}
+    {branch}
+    {/if}
+  {/each}
+  {(" | ") + metadata[2] + (" | ") + metadata[3]}
+</span>
 </h2>
