@@ -15,7 +15,8 @@ This repository contains some features not present in the fantastic
   repositories, to which the logged in user has access to.
   Requires a [custom version](https://github.com/GEBIT/zoekt) of zoekt,
   which uses the userId passed by neogrok to select the user-accessible shards.
-- The possibility to change the title to something else than 'neogrok'
+- The possibility to change the title to something else than 'neogrok'.
+- Branches in file search result header are now links to editing the file in Gitlab.
 
 ## Features and usage
 
