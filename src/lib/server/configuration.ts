@@ -11,6 +11,10 @@ const fileConfigurationSchema = v.object({
     .record(v.string())
     .map((o) => new Map(Object.entries(o)))
     .optional(),
+  dvcsMappings: v
+    .record(v.string())
+    .map((o) => new Map(Object.entries(o)))
+    .optional(),
 });
 type FileConfiguration = v.Infer<typeof fileConfigurationSchema>;
 const defaultConfigFilePath = "/etc/neogrok/config.json";
@@ -24,6 +28,7 @@ type Configuration = {
   readonly zoektUrl: URL;
   readonly neogrokTitle: string;
   readonly openGrokProjectMappings: ReadonlyMap<string, string>;
+  readonly dvcsMappings: ReadonlyMap<string, string>;
   readonly authProviderId: string;
 };
 
@@ -86,6 +91,8 @@ export const resolveConfiguration: () => Promise<void> = async () => {
     neogrokTitle,
     openGrokProjectMappings:
       fileConfig?.openGrokProjectMappings ?? new Map<string, string>(),
+    dvcsMappings:
+      fileConfig?.dvcsMappings ?? new Map<string, string>(),
     authProviderId: "keycloak", // authProviderId not configurable atm
   };
 };

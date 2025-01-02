@@ -1,0 +1,7 @@
+{
+    "dvcsMappings": {
+      "*gitlab*.local.gebit.de": "gitlab",
+      "*gitlab.dinf.gebit.dev": "gitlab",
+      "localhost*": "bitbucket"
+    }
+}
