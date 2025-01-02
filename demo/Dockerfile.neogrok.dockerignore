@@ -10,3 +10,4 @@
 !vite.config.ts
 !demo/Dockerfile.neogrok*
 !main.js
+!config.json

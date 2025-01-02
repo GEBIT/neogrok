@@ -42,10 +42,10 @@
   <Lander neogrokTitle={data.neogrokTitle}/>
 {:else if data.searchOutcome.kind === "error"}
   {#if previousSearchResults}
-    <SearchResults results={previousSearchResults} />
+    <SearchResults results={previousSearchResults} dvcsMappings={data.dvcsMappings} />
   {:else}
     <Lander neogrokTitle={data.neogrokTitle}/>
   {/if}
 {:else}
-  <SearchResults results={data.searchOutcome.results} />
+  <SearchResults results={data.searchOutcome.results} dvcsMappings={data.dvcsMappings} />
 {/if}

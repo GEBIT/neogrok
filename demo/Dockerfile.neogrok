@@ -6,6 +6,7 @@ RUN yarn install \
     && yarn workspaces focus --production
 
 FROM gcr.io/distroless/nodejs20-debian12
+COPY config.json /etc/neogrok/config.json
 WORKDIR /app
 COPY package.json .
 COPY main.js .

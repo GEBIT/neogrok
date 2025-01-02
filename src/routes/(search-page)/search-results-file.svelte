@@ -10,6 +10,7 @@
 
   export let file: ResultFile;
   export let rank: number;
+  export let dvcsMappings: ReadonlyMap<string, string>;
 
   const matchSortOrder = acquireMatchSortOrderStore();
   const fileMatchesCutoff = acquireFileMatchesCutoffStore();
@@ -61,7 +62,7 @@
 <div>
   <span bind:this={topOfList} />
   <section class="p-1 border-2 flex flex-col gap-1">
-    <SearchResultsFileHeader {file} {rank} />
+    <SearchResultsFileHeader {file} {rank} {dvcsMappings} />
     {#if lineGroups.length > 0}
       <div class="font-mono text-sm divide-y">
         {#each lineGroups as lines}

@@ -5,9 +5,11 @@
   import Link from "$lib/link.svelte";
   import type { ResultFile } from "$lib/server/search-api";
   import RenderedContent from "./rendered-content.svelte";
-
+  import { minimatch } from 'minimatch';
+  
   export let file: ResultFile;
   export let rank: number;
+  export let dvcsMappings: ReadonlyMap<string, string>;
 
   $: metadata = [
     `${file.matchCount} ${file.matchCount === 1 ? "match" : "matches"}`,
@@ -20,13 +22,69 @@
     `№${rank}`,
   ];
 
+  const getDvcsType = (
+    url: URL | null
+  ): string | undefined => {
+    if (url) {
+      for (const [hostnameGlob, hostType] of dvcsMappings.entries()) {
+        if (minimatch(url.hostname, hostnameGlob)) {
+          // this glob matches, use its type for link generation
+          return hostType
+        }
+      }
+    }
+    return undefined
+  }
+
+  const calcTooltip = (
+    fileUrl: string
+  ): string => {
+    let tooltip: string = "Edit in "
+    let parsedFileUrl: URL | null = URL.parse(fileUrl)
+    let dvcsType: string | undefined = getDvcsType(parsedFileUrl)
+    if (dvcsType) {
+      // capitalize first letter of dvcsType
+      tooltip += dvcsType.charAt(0).toUpperCase() + dvcsType.slice(1)
+    } else {
+      // assume generic vcs
+      tooltip += "VCS"
+    }
+    return tooltip
+  }
+
   const calcEditLink = (
     file: ResultFile,
     branch: string
   ): string => {
-    let editLink: string = 'https://gitlab.local.gebit.de/' + file.repository + '/-/edit/' + branch + '/' + file.fileName.text
-    if (file.chunks.length > 0) {
-      editLink += '#L' + file.chunks[0].startLineNumber
+    let editLink: string = ""
+    let dvcsType: string | undefined = undefined
+    if (file.fileUrl) {
+      let parsedFileUrl: URL | null = URL.parse(file.fileUrl)
+      if (parsedFileUrl) {
+        dvcsType = getDvcsType(parsedFileUrl)
+        switch (dvcsType) {
+          // calculate edit link depending on dvcsType
+          case 'github':
+          case 'gitlab':
+            // github and gitlab use the same url schema
+            editLink = parsedFileUrl.protocol + '//' + parsedFileUrl.host + '/' + file.repository + '/edit/' + encodeURIComponent(branch) + '/' + encodeURIComponent(file.fileName.text)
+            if (file.chunks.length > 0) {
+              editLink += '#L' + file.chunks[0].startLineNumber
+            }
+            break
+          case 'bitbucket':
+            // ?mode=edit seems to work with cloud version only, not supported in server version:
+            // https://community.atlassian.com/t5/Bitbucket-questions/Deeplink-to-edit-page-on-Bitbucket-Server/qaq-p/864494
+            editLink = parsedFileUrl.protocol + '//' + parsedFileUrl.host + parsedFileUrl.pathname + '?mode=edit&at=' + encodeURIComponent(branch)
+            if (file.chunks.length > 0) {
+              editLink += '#' + file.chunks[0].startLineNumber
+            }
+            break
+          default:
+            console.log("unknown dvcsType for host: " + parsedFileUrl.hostname)
+            return 'https://' + parsedFileUrl.host
+        }
+      }
     }
     return editLink
   };
@@ -49,7 +107,7 @@
   {metadata[0]} | {#each metadata[1] as branch, i}
     {#if i > 0}, {/if}  
     {#if file.fileUrl}
-    <Link to={calcEditLink(file, branch)} tooltip='Edit in Gitlab'>{branch}</Link>
+    <Link to={calcEditLink(file, branch)} tooltip={calcTooltip(file.fileUrl)}>{branch}</Link>
     {:else}
     {branch}
     {/if}

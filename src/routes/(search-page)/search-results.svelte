@@ -4,6 +4,8 @@
   import SearchResultsFile from "./search-results-file.svelte";
 
   export let results: SearchResults;
+  export let dvcsMappings: ReadonlyMap<string, string>;
+
   $: ({
     zoektStats: { fileCount, matchCount, filesSkipped, duration },
     files,
@@ -44,6 +46,6 @@
 </h1>
 <div class="space-y-2">
   {#each files as file, i (`${file.repository}/${file.fileName.text}@${file.branches.join(";")}`)}
-    <SearchResultsFile {file} rank={i + 1} />
+    <SearchResultsFile {file} rank={i + 1} {dvcsMappings}/>
   {/each}
 </div>
