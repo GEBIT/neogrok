@@ -214,6 +214,8 @@ const searchResultSchema = v.object({
         )
         .map((val) => val ?? []),
       RepoURLs: v.record(v.union(v.string(), v.undefined())),
+      RepoEditURLs: v.record(v.union(v.string(), v.undefined())),
+      RepoBrowseURLs: v.record(v.union(v.string(), v.undefined())),
       LineFragments: v.record(v.union(v.string(), v.undefined())),
     })
     .map(
@@ -224,6 +226,8 @@ const searchResultSchema = v.object({
         FilesSkipped: filesSkipped,
         Files: files,
         RepoURLs: repoUrls,
+        RepoEditURLs: repoEditUrls,
+        RepoBrowseURLs: repoBrowseUrls,
         LineFragments: repoLineNumberFragments,
       }) => ({
         zoektStats: {
@@ -246,6 +250,10 @@ const searchResultSchema = v.object({
               fileUrl: repoUrls[repository]
                 ?.replaceAll("{{.Version}}", version)
                 .replaceAll("{{.Path}}", fileName.text),
+              // the {{.Branch}} template part is left in for later replacement
+              fileEditUrl: repoEditUrls[repository]
+                ?.replaceAll("{{.Path}}", fileName.text),
+              repoBrowseUrl: repoBrowseUrls[repository],
               // The 'template' is such that the line number can be `join`ed
               // into it. JSON serializable!
               lineNumberTemplate:

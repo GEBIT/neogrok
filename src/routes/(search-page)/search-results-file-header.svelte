@@ -58,6 +58,7 @@
   ): string => {
     let editLink: string = ""
     let dvcsType: string | undefined = undefined
+    console.log(file)
     if (file.fileUrl) {
       let parsedFileUrl: URL | null = URL.parse(file.fileUrl)
       if (parsedFileUrl) {
@@ -88,6 +89,20 @@
     }
     return editLink
   };
+
+  const calcEditLink2 = (
+    file: ResultFile,
+    branch: string
+  ): string => {
+    console.log(file)
+    // file.fileEditUrl has been checked by the caller
+    let editUrl: string = file.fileEditUrl!.replaceAll("{{.Branch}}", branch)
+    if (file.lineNumberTemplate && file.chunks.length > 0) {
+      return editUrl + file.lineNumberTemplate.join(file.chunks[0].startLineNumber.toString())
+    }
+    return editUrl
+  }
+
 </script>
 
 <h2
@@ -97,7 +112,8 @@
        URL in search results - either we do dumb stuff to the file template URL
        or we make a separate /list API request for each repo -->
   <span
-    ><span>{file.repository}</span><span
+    ><span class="ml-auto"
+    >{#if file.repoBrowseUrl}<Link to={file.repoBrowseUrl}>{file.repository}</Link>{:else}{file.repository}{/if}</span><span
       ><ChevronRight class="inline" size={16} /></span
     >{#if file.fileUrl}<Link to={file.fileUrl}>
         <RenderedContent content={file.fileName} /></Link
@@ -106,7 +122,9 @@
   <span class="ml-auto">
   {metadata[0]} | {#each metadata[1] as branch, i}
     {#if i > 0}, {/if}  
-    {#if file.fileUrl}
+    {#if file.fileEditUrl}
+    <Link to={calcEditLink2(file, branch)} tooltip='Edit in VCS'>{branch}</Link>
+    {:else if file.fileUrl}
     <Link to={calcEditLink(file, branch)} tooltip={calcTooltip(file.fileUrl)}>{branch}</Link>
     {:else}
     {branch}
