@@ -3,7 +3,7 @@
 //
 // These functions handle both the old and new versions of the templates.
 
-const urlJoinPathTemplate = /^{{\s*URLJoinPath\s+(?<args>.*?)\s*}}$/;
+const urlJoinPathTemplate = /^{{\s*URLJoinPath\s+(?<args>.*?)\s*}}/;
 
 export const evaluateFileUrlTemplate = (
   template: string,
