@@ -130,7 +130,7 @@
       ><span style={`color: ${color}`} class={fontClass}>{text}</span></mark
     >
   {:else if match}
-    <mark class="bg-yellow-200 dark:bg-yellow-900">{text}</mark>
+    <mark class="bg-yellow-200 dark:bg-yellow-900 dark:text-white">{text}</mark>
   {:else if color}
     <span style={`color: ${color}`} class={fontClass}>{text}</span>
   {:else}
