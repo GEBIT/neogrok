@@ -73,11 +73,11 @@
 
 <div class="overflow-x-auto">
   <table class="border-collapse text-sm w-full text-center h-fit">
-    <thead class="border bg-slate-100 dark:bg-slate-800">
+    <thead class="border bg-slate-100 dark:bg-slate-800 dark:border-slate-600">
       <tr>
         <th></th>
         <th></th>
-        <th class="p-1 border-x" colspan="4"
+        <th class="p-1 border-x dark:border-slate-600" colspan="4"
           >Index <Link to="/about#repository-stats">shard files</Link></th
         >
         <th></th>
@@ -90,7 +90,7 @@
           ></th
         >
         <th class="p-1">Branches</th>
-        <th class="p-1 border-l"
+        <th class="p-1 border-l dark:border-slate-600"
           ><Sortable
             bind:sortBy
             sortColumn={{ prop: "shardCount", kind: "number" }}
@@ -111,7 +111,7 @@
             >Index size in RAM</Sortable
           ></th
         >
-        <th class="p-1 border-r"
+        <th class="p-1 border-r dark:border-slate-600"
           ><Sortable
             bind:sortBy
             sortColumn={{ prop: "contentBytes", kind: "number" }}
@@ -136,21 +136,21 @@
     </thead>
     <tbody>
       {#each truncated as { name, url, branches, commitUrlTemplate, shardCount, fileCount, indexBytes, contentBytes, lastIndexed, lastCommit }}
-        <tr class="border">
-          <td class="p-1 border-x"><RepositoryName {name} {url} /></td>
-          <td class="p-1 border-x"
+        <tr class="border dark:border-slate-600">
+          <td class="p-1 border-x dark:border-slate-600"><RepositoryName {name} {url} /></td>
+          <td class="p-1 border-x dark:border-slate-600"
             ><Branches {branches} {commitUrlTemplate} /></td
           >
-          <td class="p-1 border-x text-right">{shardCount}</td>
-          <td class="p-1 border-x text-right">{fileCount}</td>
-          <td class="p-1 border-x text-right"
+          <td class="p-1 border-x text-right dark:border-slate-600">{shardCount}</td>
+          <td class="p-1 border-x text-right dark:border-slate-600">{fileCount}</td>
+          <td class="p-1 border-x text-right dark:border-slate-600"
             >{prettyBytes(indexBytes, { space: false, binary: true })}</td
           >
-          <td class="p-1 border-x text-right"
+          <td class="p-1 border-x text-right dark:border-slate-600"
             >{prettyBytes(contentBytes, { space: false, binary: true })}</td
           >
-          <td class="p-1 border-x">{lastIndexed}</td>
-          <td class="p-1 border-x">{lastCommit ?? "n/a"}</td>
+          <td class="p-1 border-x dark:border-slate-600">{lastIndexed}</td>
+          <td class="p-1 border-x dark:border-slate-600">{lastCommit ?? "n/a"}</td>
         </tr>
       {/each}
     </tbody>

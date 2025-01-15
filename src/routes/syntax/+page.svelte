@@ -158,14 +158,14 @@
   <table class="border border-collapse text-sm text-center">
     <Heading element="caption" id="prefix-table">Available prefixes</Heading>
     <thead>
-      <tr class="border bg-slate-100 dark:bg-slate-800">
+      <tr class="border bg-slate-100 dark:bg-slate-800 dark:border-slate-600">
         <th class="p-1">Prefix(es)</th>
         <th class="p-1">Description</th>
         <th class="p-1">Examples</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>file:</code>, <code>f:</code>
         </td>
@@ -181,7 +181,7 @@
           <ExampleQuery query={'f:"evil file with spaces"'} />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>content:</code>, <code>c:</code>
         </td>
@@ -193,7 +193,7 @@
           <ExampleQuery query="c:README" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>repo:</code>, <code>r:</code>
         </td>
@@ -204,7 +204,7 @@
           <ExampleQuery query="r:linux driver" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>branch:</code>, <code>b:</code>
         </td>
@@ -215,7 +215,7 @@
           <ExampleQuery query="b:prerelease foo" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>lang:</code>
         </td>
@@ -237,7 +237,7 @@
           <ExampleQuery query="lang:typescript type" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>sym:</code>
         </td>
@@ -250,7 +250,7 @@
           <ExampleQuery query="sym:\bmain\b" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>case:</code>
         </td>
@@ -266,7 +266,7 @@
           <ExampleQuery query="case:no TEST" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>archived:</code>
         </td>
@@ -279,7 +279,7 @@
           <ExampleQuery query="archived:no readme" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>fork:</code>
         </td>
@@ -292,7 +292,7 @@
           <ExampleQuery query="fork:no readme" />
         </td>
       </tr>
-      <tr class="border">
+      <tr class="border dark:border-slate-600">
         <td class="p-1">
           <code>public:</code>
         </td>
