@@ -52,6 +52,26 @@
     return tooltip
   }
 
+  const calcLineNumber = (
+    file: ResultFile
+  ): string => {
+    let lineNumber : string = ""
+    if (file.chunks.length > 0 && file.lineNumberTemplate) {
+      // find the actual start of the match
+      let lines = file.chunks[0]["lines"]
+      let firstMatchLine = 0
+      for (const line of lines) {
+        if (line["matchRanges"].length != 0) {
+          // this is a line with a match, stop counting
+          break
+        }
+        firstMatchLine++
+      }
+      lineNumber += file.lineNumberTemplate[0] + (file.chunks[0].startLineNumber + firstMatchLine)
+    }
+    return lineNumber
+  }
+
   const calcEditLink = (
     file: ResultFile,
     branch: string
@@ -67,18 +87,27 @@
           case 'github':
           case 'gitlab':
             // github and gitlab use the same url schema
-            editLink = parsedFileUrl.protocol + '//' + parsedFileUrl.host + '/' + file.repository + '/edit/' + encodeURIComponent(branch) + '/' + encodeURIComponent(file.fileName.text)
-            if (file.chunks.length > 0) {
-              editLink += '#L' + file.chunks[0].startLineNumber
-            }
+            editLink = parsedFileUrl.protocol + 
+              '//' + 
+              parsedFileUrl.host + 
+              '/' + 
+              file.repository + 
+              '/edit/' + 
+              encodeURIComponent(branch) + 
+              '/' + 
+              encodeURIComponent(file.fileName.text) +
+              calcLineNumber(file)
             break
           case 'bitbucket':
             // ?mode=edit seems to work with cloud version only, not supported in server version:
             // https://community.atlassian.com/t5/Bitbucket-questions/Deeplink-to-edit-page-on-Bitbucket-Server/qaq-p/864494
-            editLink = parsedFileUrl.protocol + '//' + parsedFileUrl.host + parsedFileUrl.pathname + '?mode=edit&at=' + encodeURIComponent(branch)
-            if (file.chunks.length > 0) {
-              editLink += '#' + file.chunks[0].startLineNumber
-            }
+            editLink = parsedFileUrl.protocol + 
+              '//' + 
+              parsedFileUrl.host + 
+              parsedFileUrl.pathname + 
+              '?mode=edit&at=' + 
+              encodeURIComponent(branch) +
+              calcLineNumber(file)
             break
           default:
             console.log("unknown dvcsType for host: " + parsedFileUrl.hostname)
