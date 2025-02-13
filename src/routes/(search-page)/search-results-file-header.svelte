@@ -23,7 +23,7 @@
   ];
 
   const getDvcsType = (
-    url: URL | null
+    url: URL
   ): string | undefined => {
     if (url) {
       for (const [hostnameGlob, hostType] of dvcsMappings.entries()) {
@@ -40,7 +40,7 @@
     fileUrl: string
   ): string => {
     let tooltip: string = "Edit in "
-    let parsedFileUrl: URL | null = URL.parse(fileUrl)
+    let parsedFileUrl: URL = new URL(fileUrl)
     let dvcsType: string | undefined = getDvcsType(parsedFileUrl)
     if (dvcsType) {
       // capitalize first letter of dvcsType
@@ -79,7 +79,7 @@
     let editLink: string = ""
     let dvcsType: string | undefined = undefined
     if (file.fileUrl) {
-      let parsedFileUrl: URL | null = URL.parse(file.fileUrl)
+      let parsedFileUrl: URL = new URL(file.fileUrl)
       if (parsedFileUrl) {
         dvcsType = getDvcsType(parsedFileUrl)
         switch (dvcsType) {
