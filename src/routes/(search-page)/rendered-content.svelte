@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { ContentLine, Range } from "$lib/server/content-parser";
-  import type { FontStyle, ThemedToken } from "shikiji";
 
   export let content: ContentLine;
   export let highlights: ReadonlyArray<ThemedToken> | undefined = undefined;
+  import type { FontStyle, ThemedToken } from "shiki";
 
   const toFontClass = (
     fontStyle: FontStyle | undefined,
@@ -12,7 +12,7 @@
       return undefined;
     }
     switch (fontStyle) {
-      // These magic numbers come from an enum in shikiji that I refuse to link
+      // These magic numbers come from an enum in shiki that I refuse to link
       // this component to. Written on the wall that contains the thousands of
       // terrible design decisions in typescript, you will find enums.
       case 0:
@@ -126,11 +126,11 @@
       enumerate all possible colors emitted by the highlight theme (thus
       coupling us to it) in code, so that tailwind could pick them up.
     -->
-    <mark class="bg-yellow-200 dark:bg-yellow-900"
+    <mark class="bg-yellow-200 dark:bg-yellow-900 text-inherit"
       ><span style={`color: ${color}`} class={fontClass}>{text}</span></mark
     >
   {:else if match}
-    <mark class="bg-yellow-200 dark:bg-yellow-900 dark:text-white">{text}</mark>
+    <mark class="bg-yellow-200 dark:bg-yellow-900 text-inherit dark:text-white">{text}</mark>
   {:else if color}
     <span style={`color: ${color}`} class={fontClass}>{text}</span>
   {:else}

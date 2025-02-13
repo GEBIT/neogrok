@@ -1,5 +1,30 @@
 # neogrok
 
+## 1.1.4
+
+### Patch Changes
+
+- 6a18430: Upgrade shiki (syntax highlighting)
+- 409d8ab: Fix text color regression in dark mode
+
+## 1.1.3
+
+### Patch Changes
+
+- e38026c: Bump all tooling dependencies (svelte, vite, tailwind, eslint, etc)
+
+## 1.1.2
+
+### Patch Changes
+
+- dfbbdf6: Improve URL encoding of repository URLs
+
+## 1.1.1
+
+### Patch Changes
+
+- dbac62a: Improve legibility of filename match highlighting in dark mode
+
 ## 1.1.0
 
 ### Minor Changes

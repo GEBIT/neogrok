@@ -60,9 +60,9 @@
 </script>
 
 <div>
-  <span bind:this={topOfList} />
-  <section class="p-1 border-2 dark:border-slate-600 flex flex-col gap-1">
-    <SearchResultsFileHeader {file} {rank} {dvcsMappings} />
+  <span bind:this={topOfList}></span>
+  <section class="p-1 border-2 flex flex-col gap-1 dark:border-slate-600">
+    <SearchResultsFileHeader {file} {rank} {dvcsMappings}/>
     {#if lineGroups.length > 0}
       <div class="font-mono text-sm divide-y">
         {#each lineGroups as lines}
