@@ -5,13 +5,13 @@ import {
   search,
   type SearchResponse,
 } from "$lib/server/search-api";
+import { authenticateApiRequest } from "$src/auth";
 
 import type { RequestHandler } from "./$types";
 
-export const POST = async (event) => {
-  const session = await event.locals.auth();
-  const userId = session?.user?.id;
-  console.log("searching as user: " + userId);
+export const POST: RequestHandler = async (event) => {
+  const userId = await authenticateApiRequest(event.locals, event.request);
+  console.log("searching as", userId);
 
   const zoektPost = devalueBypass<SearchQuery, SearchResponse>(
     searchQuerySchema,

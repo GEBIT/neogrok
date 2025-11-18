@@ -29,7 +29,7 @@ export type SearchResponse =
 export const search = async (
   { query, contextLines, files, matches }: SearchQuery,
   f: typeof fetch,
-  userName: string,
+  userName: string | undefined,
 ): Promise<SearchResponse> => {
   const body = JSON.stringify({
     q: query,

@@ -3,6 +3,8 @@ import Keycloak from "@auth/sveltekit/providers/keycloak";
 import { env } from "$env/dynamic/private";
 import { jwtDecode } from "jwt-decode";
 import type { JWT } from "@auth/core/jwt";
+import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import { error, isHttpError } from "@sveltejs/kit";
 
 const authjsSecret = env.AUTH_SECRET; // Use Environment Variables AUTH_SECRET in prod
 
@@ -41,6 +43,45 @@ function denyLogin(token: JWT): JWT {
   token.error = "LoginNotAllowedError";
   token.userId = null;
   return token;
+}
+
+const jwksUrl = new URL(kcConfig.issuer + "/protocol/openid-connect/certs");
+const JWKS = createRemoteJWKSet(jwksUrl);
+
+async function authenticateWithAccessToken(accessToken: string): Promise<string | undefined> {
+  // jwtVerify throws if signature/claims invalid
+  const { payload } = await jwtVerify(accessToken, JWKS, {
+    issuer: kcConfig.issuer
+  });
+  // verify group membership
+  const groups = payload[kcConfig.groupsAttribute];
+  if(kcConfig.requiredGroup && (!Array.isArray(groups) || !groups.includes(kcConfig.requiredGroup))) {
+    throw error(403, "Forbidden")
+  }
+  // user is authorized; extract user name
+  const userId = payload["preferred_username"];
+  return userId ? String(userId) : undefined;
+}
+
+export async function authenticateApiRequest(locals: App.Locals, request: Request) {
+  const authHeader = request.headers.get("Authorization");
+
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.slice(7);
+    try {
+      return await authenticateWithAccessToken(token);
+    } catch (err) {
+      if(isHttpError(err)) {
+        throw err;
+      } else {
+        throw error(401, "Invalid token");
+      }
+    }
+  } else {
+    // fallback to cookie-based session
+    const session = await locals.auth();
+    return session?.user?.id;
+  }
 }
 
 export const auth = SvelteKitAuth({

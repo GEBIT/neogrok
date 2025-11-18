@@ -18,7 +18,7 @@ export type ListRepositoriesResponse =
 export async function listRepositories(
   { query }: ListQuery,
   f: typeof fetch,
-  userName: string,
+  userName: string | undefined,
 ): Promise<ListRepositoriesResponse> {
   if (query === undefined) {
     // if no query is defined (all repos should be listed),
