@@ -14,9 +14,9 @@ export const devalueBypass =
     callZoekt: (
       requestData: RequestData,
       f: typeof fetch,
-      userName: string,
+      userName: string | undefined,
     ) => Promise<ResponseData>,
-    userName: string,
+    userName: string | undefined,
   ): RequestHandler =>
   async ({ request, fetch }) => {
     let requestData: RequestData;
