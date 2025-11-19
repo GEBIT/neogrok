@@ -6,7 +6,7 @@ import {
   type ListRepositoriesResponse,
 } from "$lib/server/zoekt-list-repositories";
 import { authenticateApiRequest } from "$src/auth";
-import { type RequestHandler } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async (event) => {
   const userId = await authenticateApiRequest(event.locals, event.request);
