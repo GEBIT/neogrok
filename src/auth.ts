@@ -48,22 +48,30 @@ function denyLogin(token: JWT): JWT {
 const jwksUrl = new URL(kcConfig.issuer + "/protocol/openid-connect/certs");
 const JWKS = createRemoteJWKSet(jwksUrl);
 
-async function authenticateWithAccessToken(accessToken: string): Promise<string | undefined> {
+async function authenticateWithAccessToken(
+  accessToken: string,
+): Promise<string | undefined> {
   // jwtVerify throws if signature/claims invalid
   const { payload } = await jwtVerify(accessToken, JWKS, {
-    issuer: kcConfig.issuer
+    issuer: kcConfig.issuer,
   });
   // verify group membership
   const groups = payload[kcConfig.groupsAttribute];
-  if(kcConfig.requiredGroup && (!Array.isArray(groups) || !groups.includes(kcConfig.requiredGroup))) {
-    throw error(403, "Forbidden")
+  if (
+    kcConfig.requiredGroup &&
+    (!Array.isArray(groups) || !groups.includes(kcConfig.requiredGroup))
+  ) {
+    throw error(403, "Forbidden");
   }
   // user is authorized; extract user name
   const userId = payload["preferred_username"];
   return userId ? String(userId) : undefined;
 }
 
-export async function authenticateApiRequest(locals: App.Locals, request: Request) {
+export async function authenticateApiRequest(
+  locals: App.Locals,
+  request: Request,
+) {
   const authHeader = request.headers.get("Authorization");
 
   if (authHeader?.startsWith("Bearer ")) {
@@ -71,7 +79,7 @@ export async function authenticateApiRequest(locals: App.Locals, request: Reques
     try {
       return await authenticateWithAccessToken(token);
     } catch (err) {
-      if(isHttpError(err)) {
+      if (isHttpError(err)) {
         throw err;
       } else {
         throw error(401, "Invalid token");
