@@ -64,7 +64,7 @@ async function authenticateWithAccessToken(
     throw error(403, "Forbidden");
   }
   // user is authorized; extract user name
-  const userId = payload["preferred_username"];
+  const userId = payload[kcConfig.userIdAttribute];
   return userId ? String(userId) : undefined;
 }
 
