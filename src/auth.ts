@@ -68,10 +68,21 @@ async function authenticateWithAccessToken(
   return userId ? String(userId) : undefined;
 }
 
+/**
+ * Authenticates API requests using Bearer token or cookie-based session.
+ * Bearer token authentication takes precedence if the Authorization header is present.
+ * Returns the authenticated user's username or undefined, if no auth context is present.
+ * 
+ * @param locals - The SvelteKit locals object containing auth session
+ * @param request - The incoming request to check for Authorization header
+ * @returns The authenticated user ID, or undefined if authentication fails
+ * @throws {401} Invalid token - If the Bearer token is invalid or expired
+ * @throws {403} Forbidden - If the user lacks required group membership
+ */
 export async function authenticateApiRequest(
   locals: App.Locals,
   request: Request,
-) {
+): Promise<string | undefined> {
   const authHeader = request.headers.get("Authorization");
 
   if (authHeader?.startsWith("Bearer ")) {
