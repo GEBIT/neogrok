@@ -9,7 +9,7 @@ import { error, isHttpError } from "@sveltejs/kit";
 const authjsSecret = env.AUTH_SECRET; // Use Environment Variables AUTH_SECRET in prod
 
 const kcConfig = {
-  issuer: env.AUTH_KEYCLOAK_ISSUER, // Use Environment Variables AUTH_KEYCLOAK_ISSUER in prod
+  issuer: env.AUTH_KEYCLOAK_ISSUER ?? "http://localhost:9090/realms/master", // Use Environment Variables AUTH_KEYCLOAK_ISSUER in prod
   refreshEndpoint:
     env.AUTH_KEYCLOAK_REFRESH ??
     env.AUTH_KEYCLOAK_ISSUER + "/protocol/openid-connect/token",
